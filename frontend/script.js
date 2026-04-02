@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
             formData.append('file', tempFile);
             
             try {
-                const res = await fetch('/upload', {
+                const res = await fetch('https://unveil-ai-bot.onrender.com/upload', {
                     method: 'POST',
                     body: formData
                 });
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         try {
             // Note: Sending to FastAPI backend acting as proxy
-            const response = await fetch("/chat", {
+            const response = await fetch("https://unveil-ai-bot.onrender.com/chat", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
