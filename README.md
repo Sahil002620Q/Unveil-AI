@@ -72,7 +72,7 @@ cd your-repo
 
 ```bash
 cd backend
-pip install -r ../requirements.txt
+pip install -r requirements.txt
 ```
 
 ---
@@ -80,7 +80,7 @@ pip install -r ../requirements.txt
 ### 3. Run FastAPI Server
 
 ```bash
-uvicorn main:app --reload
+uvicorn main:app --reload --port 8000
 ```
 
 Server runs on:
