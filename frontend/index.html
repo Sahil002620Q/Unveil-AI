@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unveil AI - Offline Assistant</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar for Mode Selection -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>Unveil AI</h2>
+                <div class="status-indicator">
+                    <span class="dot green"></span> Local Offline
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-mode="chat">
+                    <span class="icon">💬</span> General Chat
+                </button>
+                <button class="nav-btn" data-mode="phishing">
+                    <span class="icon">🎣</span> Phishing Detector
+                </button>
+                <button class="nav-btn" data-mode="reviewer">
+                    <span class="icon">⚖️</span> Honest Reviewer
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-area">
+            <header class="chat-header">
+                <h3 id="current-mode-title">General Chat</h3>
+                <p id="current-mode-desc">Dolphin 3 Llama 3.1 Uncensored</p>
+            </header>
+
+            <div class="chat-history" id="chat-history">
+                <!-- Messages will be injected here -->
+                <div class="message system">
+                    <p>Welcome. Select a mode from the sidebar and begin.</p>
+                </div>
+            </div>
+
+            <div class="chat-input-wrapper">
+                <form id="chat-form" class="glass-panel">
+                    <textarea id="user-input" placeholder="Type your message here..." rows="1" required></textarea>
+                    <button type="submit" id="send-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+                <div class="typing-indicator hidden" id="typing-indicator">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
