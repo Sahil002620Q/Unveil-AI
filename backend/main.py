@@ -64,4 +64,4 @@ if __name__ == "__main__":
     frontend_dir = os.path.join(pwd, "..", "frontend")
     if not os.path.exists(frontend_dir):
         print(f"Warning: Frontend directory not found at {frontend_dir}. Please ensure it exists.")
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=4050, reload=True)
