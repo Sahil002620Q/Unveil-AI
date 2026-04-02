@@ -138,17 +138,10 @@ Use responsibly.
 
 ##  Team
 
-* Sahil — AI Model & Backend
+* Sahil — AI Model & Backend Developer
 * Tanish — Frontend
 * Tanisha — Frontend & Presentation
-
----
-
-##  Notes for Judges
-
-* AI is used only for model integration
-* Project logic, structure, and understanding are fully explained by the team
-* Code is modular and easy to run locally
+* Yakshul - Testing and Debbuging
 
 ---
 
