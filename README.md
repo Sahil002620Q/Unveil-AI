@@ -51,8 +51,7 @@ project/
 │── backend/
 │   ├── main.py
 │   └── model_handler.py
-│
-│── requirements.txt
+│   └── requirements.txt
 │── README.md
 ```
 
