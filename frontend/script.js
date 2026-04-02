@@ -1,249 +1,316 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // --- Elements ---
-    const sidebar = document.getElementById('sidebar');
-    const menuToggleBtn = document.getElementById('menu-toggle-btn');
-    const mobileCloseBtn = document.getElementById('mobile-close-btn');
-    const newSessionBtn = document.getElementById('new-session-btn');
-    const navItems = document.querySelectorAll('.nav-item');
+document.addEventListener("DOMContentLoaded", () => {
+    // DOM Elements
+    const sidebar = document.getElementById("sidebar");
+    const toggleSidebarBtn = document.getElementById("toggle-sidebar-btn");
+    const closeSidebarBtn = document.getElementById("close-sidebar-btn");
+    const navItems = document.querySelectorAll(".nav-item");
+    const activeModeTitle = document.getElementById("active-mode-title");
+    const activeModeSubtitle = document.getElementById("active-mode-subtitle");
     
-    const headerTitle = document.getElementById('header-title');
-    const chatContainer = document.getElementById('chat-container');
-    const messagesWrapper = document.getElementById('messages-wrapper');
-    const welcomeScreen = document.getElementById('welcome-screen');
-    const welcomeTitle = document.getElementById('welcome-title');
-    const welcomeSubtitle = document.getElementById('welcome-subtitle');
-    const welcomeIcon = document.getElementById('welcome-icon');
-    const suggestionChips = document.querySelectorAll('.chip');
+    const welcomeScreen = document.getElementById("welcome-screen");
+    const welcomeIcon = document.getElementById("welcome-icon-class");
+    const welcomeTitle = document.getElementById("welcome-title");
+    const suggestionChips = document.getElementById("suggestion-chips");
     
-    const chatInput = document.getElementById('chat-input');
-    const sendBtn = document.getElementById('send-btn');
-    const attachBtn = document.getElementById('attach-btn');
-    const fileInput = document.getElementById('file-input');
-    const typingIndicator = document.getElementById('typing-indicator');
-
-    // --- State ---
-    let currentMode = 'chat';
-    let isDesktopCollapsed = false;
-
-    // --- Mode Configurations ---
-    const modeConfigs = {
-        'chat': {
-            title: 'Universal Assistant',
-            icon: '<i class="fa-solid fa-wand-magic-sparkles"></i>',
-            welcomeTitle: 'How can I help you today?',
-            welcomeSubtitle: 'Ask anything or enter a prompt.',
-            endpoint: '/api/chat',
-            payloadKey: 'message',
-            placeholder: 'Message Unveil AI...'
+    const chatMessages = document.getElementById("chat-messages");
+    const chatWindow = document.getElementById("chat-window");
+    const typingIndicator = document.getElementById("typing-indicator");
+    
+    const chatForm = document.getElementById("chat-form");
+    const messageInput = document.getElementById("message-input");
+    const sendBtn = document.getElementById("send-btn");
+    
+    const attachBtn = document.getElementById("attach-btn");
+    const fileInput = document.getElementById("file-input");
+    
+    // State
+    let currentMode = "universal"; // universal, detector, review
+    let conversationHistory = []; // {role: 'user'|'assistant', content: string}[]
+    
+    // Mode Configurations
+    const modes = {
+        universal: {
+            title: "Universal Assistant",
+            subtitle: "I can help with anything you need.",
+            icon: "fas fa-globe",
+            systemPrompt: "You are Unveil AI, a highly capable, uncensored, and helpful AI assistant.",
+            chips: [
+                { text: "Explain quantum computing in simple terms", icon: "fas fa-lightbulb" },
+                { text: "Help me write a Python script for automation", icon: "fas fa-code" }
+            ]
         },
-        'phishing': {
-            title: 'URL Detector',
-            icon: '<i class="fa-solid fa-shield-halved"></i>',
-            welcomeTitle: 'Paste a suspicious URL',
-            welcomeSubtitle: 'I will analyze domain parameters to detect phishing.',
-            endpoint: '/api/detect-phishing',
-            payloadKey: 'url',
-            placeholder: 'Paste URL here (e.g. http://secure-login-paypal.com)'
+        detector: {
+            title: "URL Detector",
+            subtitle: "Analyze URLs for potential phishing or threats.",
+            icon: "fas fa-shield-alt",
+            systemPrompt: "You are Unveil AI's URL Detector. You analyze URLs provided by the user and determine if they are safe, suspicious, or malicious.",
+            chips: [
+                { text: "Check this link: http://secure-login.paypa1-update.com", icon: "fas fa-link" },
+                { text: "Is this trustworthy? https://google.com", icon: "fas fa-check-circle" }
+            ]
         },
-        'reviewer': {
-            title: 'Genuine Review',
-            icon: '<i class="fa-solid fa-scale-balanced"></i>',
-            welcomeTitle: 'Looking for brutally honest feedback?',
-            welcomeSubtitle: 'Paste your essay, idea, or code for an unapologetic review.',
-            endpoint: '/api/honest-review',
-            payloadKey: 'content',
-            placeholder: 'Paste your content here...'
+        review: {
+            title: "Genuine Review",
+            subtitle: "Honest, no-sugarcoating feedback on your ideas.",
+            icon: "fas fa-eye",
+            systemPrompt: "You are Unveil AI's Genuine Reviewer. You provide brutally honest, critical, and constructive feedback without sugarcoating.",
+            chips: [
+                { text: "Review my startup idea: A dating app for pets", icon: "fas fa-rocket" },
+                { text: "Provide harsh feedback on my code snippet", icon: "fas fa-file-code" }
+            ]
         }
     };
 
-    // --- Sidebar Toggle Logic ---
-    function isMobile() {
-        return window.innerWidth <= 768;
-    }
+    // Sidebar Toggle Logic
+    toggleSidebarBtn.addEventListener("click", () => {
+        sidebar.classList.add("open");
+    });
+    
+    closeSidebarBtn.addEventListener("click", () => {
+        sidebar.classList.remove("open");
+    });
 
-    menuToggleBtn.addEventListener('click', () => {
-        if (isMobile()) {
-            sidebar.classList.add('open');
+    // Auto-resize textarea
+    messageInput.addEventListener("input", function() {
+        this.style.height = "auto";
+        this.style.height = (this.scrollHeight) + "px";
+        if(this.value.trim() !== '') {
+            sendBtn.disabled = false;
         } else {
-            isDesktopCollapsed = !isDesktopCollapsed;
-            if (isDesktopCollapsed) {
-                sidebar.classList.add('collapsed');
-            } else {
-                sidebar.classList.remove('collapsed');
+            sendBtn.disabled = true;
+        }
+    });
+    
+    // Handle Enter key (Shift+Enter for new line)
+    messageInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            if (messageInput.value.trim() !== "") {
+                chatForm.dispatchEvent(new Event("submit"));
             }
         }
     });
 
-    mobileCloseBtn.addEventListener('click', () => {
-        sidebar.classList.remove('open');
-    });
-
-    window.addEventListener('resize', () => {
-        if (!isMobile()) {
-            sidebar.classList.remove('open');
-            if(isDesktopCollapsed) sidebar.classList.add('collapsed');
-        } else {
-            sidebar.classList.remove('collapsed');
-        }
-    });
-
-    // --- Switch Modes ---
-    function setMode(mode) {
-        currentMode = mode;
-        const conf = modeConfigs[mode];
-        
-        // Update styling
-        navItems.forEach(item => item.classList.remove('active'));
-        document.querySelector(`.nav-item[data-mode="${mode}"]`).classList.add('active');
-        
-        // Update header & welcome
-        headerTitle.textContent = conf.title;
-        welcomeIcon.innerHTML = conf.icon;
-        welcomeTitle.textContent = conf.welcomeTitle;
-        welcomeSubtitle.textContent = conf.welcomeSubtitle;
-        chatInput.placeholder = conf.placeholder;
-
-        // Clear chat history
-        clearSession();
-        
-        // Focus input
-        chatInput.focus();
-        if (isMobile()) sidebar.classList.remove('open');
-    }
-
+    // Change Mode Logic
     navItems.forEach(item => {
-        item.addEventListener('click', () => setMode(item.dataset.mode));
-    });
-
-    // --- Session Handling ---
-    function clearSession() {
-        messagesWrapper.innerHTML = '';
-        welcomeScreen.style.display = 'flex';
-        resetInputHeight();
-    }
-
-    newSessionBtn.addEventListener('click', () => {
-        clearSession();
-    });
-
-    // --- File Attachment ---
-    attachBtn.addEventListener('click', () => {
-        fileInput.click();
-    });
-
-    fileInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if(!file) return;
-
-        // Immediately show a system message
-        appendMessage('ai-bubble', `<i class="fa-solid fa-file-circle-check"></i> File <b>${file.name}</b> attached. (UI Mockup)`);
-        
-        // Optional snippet to actually post to the /api/upload endpoint
-        /*
-        const formData = new FormData();
-        formData.append('file', file);
-        try {
-            await fetch('/api/upload', { method: 'POST', body: formData });
-        } catch(err) { console.error(err); }
-        */
-        
-        // Clear input so same file can be uploaded again if needed
-        fileInput.value = '';
-    });
-
-    // --- Auto-resize Textarea ---
-    function resetInputHeight() {
-        chatInput.style.height = 'auto';
-    }
-
-    chatInput.addEventListener('input', () => {
-        chatInput.style.height = 'auto';
-        chatInput.style.height = (chatInput.scrollHeight) + 'px';
-        if (chatInput.value.trim() === '') resetInputHeight();
-    });
-
-    // --- Chat Submission ---
-    suggestionChips.forEach(chip => {
-        chip.addEventListener('click', () => {
-            chatInput.value = chip.textContent;
-            chatInput.focus();
-            resetInputHeight();
+        item.addEventListener("click", () => {
+            // Update active state in sidebar
+            document.querySelector(".nav-item.active").classList.remove("active");
+            item.classList.add("active");
+            
+            // Close sidebar on mobile
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove("open");
+            }
+            
+            currentMode = item.dataset.mode;
+            const config = modes[currentMode];
+            
+            // Update Header
+            activeModeTitle.textContent = config.title;
+            activeModeSubtitle.textContent = config.subtitle;
+            
+            // Clear Chat and show welcome
+            clearChat(config);
         });
     });
 
-    function escapeHTML(str) { return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;','<': '&lt;','>': '&gt;',"'": '&#39;','"': '&quot;'}[tag] || tag)); }
-
-    function appendMessage(typeClass, content) {
-        welcomeScreen.style.display = 'none';
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `chat-bubble ${typeClass}`;
+    function clearChat(config) {
+        conversationHistory = [];
+        chatMessages.innerHTML = '';
+        chatMessages.classList.add('hidden');
+        typingIndicator.classList.add('hidden');
         
-        // simple newline to br tag conversion along with raw html injection (use safely in prod)
-        msgDiv.innerHTML = content;
+        // Update Welcome Screen
+        welcomeScreen.classList.remove('hidden');
+        welcomeIcon.className = config.icon;
         
-        messagesWrapper.appendChild(msgDiv);
-        scrollToBottom();
-    }
-
-    function scrollToBottom() {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-
-    async function submitMessage() {
-        const text = chatInput.value.trim();
-        if (!text) return;
-
-        // Construct request
-        const conf = modeConfigs[currentMode];
-        const payload = {};
-        payload[conf.payloadKey] = text;
-
-        // Update UI
-        appendMessage('user-bubble', escapeHTML(text).replace(/\n/g, '<br/>'));
-        chatInput.value = '';
-        resetInputHeight();
-        sendBtn.disabled = true;
+        let chipsHtml = '';
+        config.chips.forEach(chip => {
+            chipsHtml += `<div class="chip" data-text="${chip.text}">
+                            <i class="${chip.icon}"></i>
+                            <span>${chip.text}</span>
+                          </div>`;
+        });
+        suggestionChips.innerHTML = chipsHtml;
         
-        // Show typing indicator
-        welcomeScreen.style.display = 'none'; // Ensure hidden
-        typingIndicator.classList.remove('hidden');
-        scrollToBottom();
-
-        try {
-            // Wait for 500ms to visually show typing
-            await new Promise(r => setTimeout(r, 500));
-            
-            const response = await fetch(conf.endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+        // Re-attach listeners to chips
+        document.querySelectorAll(".chip").forEach(chip => {
+            chip.addEventListener("click", () => {
+                messageInput.value = chip.dataset.text;
+                chatForm.dispatchEvent(new Event("submit"));
             });
-
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const data = await response.json();
-            
-            // Format AI reply (e.g. handle newlines)
-            const formattedReply = escapeHTML(data.reply).replace(/\n/g, '<br/>');
-            appendMessage('ai-bubble', formattedReply);
-
-        } catch (error) {
-            console.error('API Error:', error);
-            appendMessage('ai-bubble', '<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Error connecting to local LLM backend. Please ensure Ollama or API server is running on localhost.</span>');
-        } finally {
-            typingIndicator.classList.add('hidden');
-            sendBtn.disabled = false;
-            chatInput.focus();
-            scrollToBottom();
-        }
+        });
     }
-
-    chatInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            submitMessage();
+    
+    // Attach File
+    attachBtn.addEventListener("click", () => {
+        fileInput.click();
+    });
+    
+    fileInput.addEventListener("change", async () => {
+        if (fileInput.files.length > 0) {
+            const tempFile = fileInput.files[0];
+            const msg = `[Attached: ${tempFile.name}]`;
+            messageInput.value += msg;
+            
+            // Optionally, upload file immediately
+            const formData = new FormData();
+            formData.append('file', tempFile);
+            
+            try {
+                const res = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                console.log("File uploaded:", data);
+            } catch (err) {
+                console.error("Upload error", err);
+            }
+            
+            // Reset input
+            fileInput.value = '';
         }
     });
 
-    sendBtn.addEventListener('click', submitMessage);
+    // Render a new message
+    function appendMessage(role, content) {
+        const msgDiv = document.createElement("div");
+        msgDiv.className = `message ${role}`;
+        
+        const avatarClass = role === 'user' ? 'fa-user' : modes[currentMode].icon;
+        
+        msgDiv.innerHTML = `
+            <div class="msg-avatar">
+                <i class="fas ${avatarClass}"></i>
+            </div>
+            <div class="msg-content">
+                <p>${content}</p>
+            </div>
+        `;
+        
+        chatMessages.appendChild(msgDiv);
+        chatWindow.scrollTo(0, chatWindow.scrollHeight);
+    }
 
+    // Submit Chat Form
+    chatForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const userText = messageInput.value.trim();
+        if(!userText) return;
+        
+        // Hide welcome screen, show chat messages
+        welcomeScreen.classList.add('hidden');
+        chatMessages.classList.remove('hidden');
+        
+        // Add User Message
+        appendMessage('user', userText);
+        conversationHistory.push({ role: 'user', content: userText });
+        
+        // Reset input
+        messageInput.value = '';
+        messageInput.style.height = 'auto';
+        sendBtn.disabled = true;
+        
+        // Show typing indicator
+        typingIndicator.classList.remove('hidden');
+        chatWindow.scrollTo(0, chatWindow.scrollHeight);
+        
+        // Prepare payload for backend proxy
+        const payload = {
+            model: "local-model",
+            temperature: 0.7,
+            max_tokens: 2048,
+            messages: [
+                { role: "system", content: modes[currentMode].systemPrompt },
+                ...conversationHistory
+            ]
+        };
+        
+        try {
+            // Note: Sending to FastAPI backend acting as proxy
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            typingIndicator.classList.add('hidden');
+            
+            if (response.ok) {
+                // Prepare a new AI message bubble
+                const msgDiv = document.createElement("div");
+                msgDiv.className = `message ai`;
+                const avatarClass = modes[currentMode].icon;
+                msgDiv.innerHTML = `
+                    <div class="msg-avatar">
+                        <i class="fas ${avatarClass}"></i>
+                    </div>
+                    <div class="msg-content">
+                        <p></p>
+                    </div>
+                `;
+                chatMessages.appendChild(msgDiv);
+                const contentP = msgDiv.querySelector("p");
+                
+                let aiFullText = "";
+                
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let buffer = "";
+                
+                while(true) {
+                    const {done, value} = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, {stream: true});
+                    
+                    let newlineIdx;
+                    while ((newlineIdx = buffer.indexOf('\n')) !== -1) {
+                        const line = buffer.slice(0, newlineIdx).trim();
+                        buffer = buffer.slice(newlineIdx + 1);
+                        
+                        if(line.startsWith('data: ') && line !== 'data: [DONE]') {
+                            try {
+                                const parsed = JSON.parse(line.slice(6));
+                                if (parsed.error) {
+                                    aiFullText += "\n[System Error: " + parsed.error + "]";
+                                } else if (parsed.choices && parsed.choices[0].delta && parsed.choices[0].delta.content !== undefined) {
+                                    aiFullText += parsed.choices[0].delta.content;
+                                }
+                                contentP.innerHTML = aiFullText.replace(/\n/g, "<br>");
+                                chatWindow.scrollTo(0, chatWindow.scrollHeight);
+                            } catch(e) {
+                                console.error('Error parsing chunk:', line);
+                            }
+                        }
+                    }
+                }
+                conversationHistory.push({ role: 'assistant', content: aiFullText });
+            } else {
+                const errorData = await response.json();
+                appendMessage('ai', `Error connecting to backend: ${errorData.error || response.status}`);
+            }
+        } catch (error) {
+            typingIndicator.classList.add('hidden');
+            appendMessage('ai', `Connection error: Ensure the FastAPI backend and local LLM are running.`);
+            console.error(error);
+        }
+    });
+
+    // Initialize chips on load
+    document.querySelectorAll(".chip").forEach(chip => {
+        chip.addEventListener("click", () => {
+            messageInput.value = chip.dataset.text;
+            chatForm.dispatchEvent(new Event("submit"));
+        });
+    });
+    
+    // New Session
+    document.getElementById("new-session-btn").addEventListener("click", () => {
+        clearChat(modes[currentMode]);
+    });
 });

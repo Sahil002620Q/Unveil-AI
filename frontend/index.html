@@ -4,99 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unveil AI</title>
-    <!-- Fonts & Icons -->
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/static/style.css?v=2">
+    <link rel="stylesheet" href="/frontend/style.css">
 </head>
 <body>
     <div class="app-container">
         <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-top">
-                <div class="logo">
-                    <i class="fa-solid fa-cube logo-icon"></i>
-                    <span class="logo-text">Unveil AI</span>
-                </div>
-                <!-- Toggle button hidden natively on desktop unless user chooses to collapse -->
-                <button class="icon-button mobile-close" id="mobile-close-btn" aria-label="Close sidebar">
-                    <i class="fa-solid fa-times"></i>
-                </button>
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <h2>Unveil AI</h2>
+                <button id="close-sidebar-btn" class="mobile-only icon-btn"><i class="fas fa-times"></i></button>
             </div>
             
-            <button class="new-session-btn" id="new-session-btn">
-                <i class="fa-solid fa-plus"></i>
-                <span class="btn-text">New Session</span>
+            <button id="new-session-btn" class="new-session-btn">
+                <i class="fas fa-plus"></i> New Session
             </button>
-
-            <nav class="nav-menu">
-                <p class="nav-label">MODES</p>
-                <button class="nav-item active" data-mode="chat">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span class="nav-text">Universal Assistant</span>
-                </button>
-                <button class="nav-item" data-mode="phishing">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <span class="nav-text">URL Detector</span>
-                </button>
-                <button class="nav-item" data-mode="reviewer">
-                    <i class="fa-solid fa-scale-balanced"></i>
-                    <span class="nav-text">Genuine Review</span>
-                </button>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-label">Modes</div>
+                <div class="nav-item active" data-mode="universal">
+                    <i class="fas fa-globe"></i>
+                    <span>Universal Assistant</span>
+                </div>
+                <div class="nav-item" data-mode="detector">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>URL Detector</span>
+                </div>
+                <div class="nav-item" data-mode="review">
+                    <i class="fas fa-eye"></i>
+                    <span>Genuine Review</span>
+                </div>
             </nav>
-
-            <div class="sidebar-bottom">
+            
+            <div class="sidebar-footer">
                 <div class="user-profile">
-                    <div class="avatar">U</div>
+                    <div class="avatar"><i class="fas fa-user"></i></div>
                     <div class="user-info">
                         <span class="user-name">Local User</span>
-                        <span class="user-status">Connected</span>
+                        <span class="user-status">Online</span>
                     </div>
-                    <button class="icon-button settings-btn" aria-label="Settings">
-                        <i class="fa-solid fa-gear"></i>
-                    </button>
                 </div>
+                <button class="settings-btn icon-btn"><i class="fas fa-cog"></i></button>
             </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- Main Content Area -->
         <main class="main-content">
-            <header class="glass-header">
-                <div class="header-left">
-                    <button class="icon-button menu-toggle" id="menu-toggle-btn" aria-label="Toggle sidebar">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-                    <div class="mode-info">
-                        <h2 id="header-title">Universal Assistant</h2>
-                        <span class="badge">Dolphin LLM</span>
-                    </div>
-                </div>
-                <div class="header-right">
-                    <!-- Additional top right actions if any -->
+            <!-- Glassmorphic Header -->
+            <header class="chat-header">
+                <button id="toggle-sidebar-btn" class="icon-btn mobile-only"><i class="fas fa-bars"></i></button>
+                <div class="header-title">
+                    <h1 id="active-mode-title">Universal Assistant</h1>
+                    <span id="active-mode-subtitle" class="subtitle">I can help with anything you need.</span>
                 </div>
             </header>
 
-            <div class="chat-container" id="chat-container">
-                <!-- Welcome Screen -->
-                <div class="welcome-screen" id="welcome-screen">
-                    <div class="welcome-icon" id="welcome-icon">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <!-- Chat Area -->
+            <div id="chat-window" class="chat-window">
+                <!-- Welcome Screen / Empty State -->
+                <div id="welcome-screen" class="welcome-screen">
+                    <div class="welcome-icon">
+                        <i id="welcome-icon-class" class="fas fa-globe"></i>
                     </div>
-                    <h1 id="welcome-title">How can I help you today?</h1>
-                    <p id="welcome-subtitle">Ask anything or enter a prompt.</p>
+                    <h2 id="welcome-title">How can I help you today?</h2>
+                    
                     <div class="suggestion-chips" id="suggestion-chips">
-                        <button class="chip">Write a python script</button>
-                        <button class="chip">Explain quantum physics</button>
-                        <button class="chip">Draft an email</button>
+                        <div class="chip" data-text="Explain quantum computing in simple terms">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Explain quantum computing in simple terms</span>
+                        </div>
+                        <div class="chip" data-text="Help me write a Python script for automation">
+                            <i class="fas fa-code"></i>
+                            <span>Help me write a Python script for automation</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Chat messages will be dynamically injected here -->
+                <div id="chat-messages" class="chat-messages hidden"></div>
                 
-                <!-- Chat Messages appended here -->
-                <div class="messages-wrapper" id="messages-wrapper"></div>
-                
-                <!-- Typing Indicator Modal (Hidden by default) -->
-                <div class="typing-container hidden" id="typing-indicator">
-                    <div class="chat-bubble ai-bubble typing">
+                <!-- Typing Indicator -->
+                <div id="typing-indicator" class="typing-indicator hidden">
+                    <div class="typing-bubble">
                         <div class="dot"></div>
                         <div class="dot"></div>
                         <div class="dot"></div>
@@ -104,26 +98,22 @@
                 </div>
             </div>
 
-            <div class="input-area-wrapper">
-                <div class="input-container">
-                    <button class="attach-btn" id="attach-btn" aria-label="Attach File">
-                        <i class="fa-solid fa-paperclip"></i>
+            <!-- Input Area -->
+            <div class="input-area-container">
+                <form id="chat-form" class="input-container">
+                    <input type="file" id="file-input" class="hidden-input" accept="*/*" />
+                    <button type="button" id="attach-btn" class="icon-btn attach-btn">
+                        <i class="fas fa-paperclip"></i>
                     </button>
-                    <!-- Hidden file input -->
-                    <input type="file" id="file-input" style="display: none;" />
-
-                    <textarea id="chat-input" placeholder="Message Unveil AI..." rows="1"></textarea>
-                    
-                    <button class="send-btn" id="send-btn" aria-label="Send">
-                        <i class="fa-solid fa-paper-plane"></i>
+                    <textarea id="message-input" rows="1" placeholder="Send a message to Unveil AI..." required></textarea>
+                    <button type="submit" id="send-btn" class="send-btn">
+                        <i class="fas fa-paper-plane"></i>
                     </button>
-                </div>
-                <div class="footer-note">Unveil AI processes locally. Your data is secure.</div>
+                </form>
+                <div class="legal-text">AI can make mistakes. Consider verifying important information.</div>
             </div>
         </main>
     </div>
-
-    <!-- Scripts -->
-    <script src="/static/script.js?v=2"></script>
+    <script src="/frontend/script.js"></script>
 </body>
 </html>
