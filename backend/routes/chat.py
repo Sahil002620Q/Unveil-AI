@@ -7,8 +7,8 @@ router = APIRouter()
 class ChatRequest(BaseModel):
     message: str
 
-@router.post("/")
-async def universal_assistant(request: ChatRequest):
+@router.post("")
+def universal_assistant(request: ChatRequest):
     system_prompt = "You are Unveil AI, a highly advanced, premium Universal Assistant. Provide clear, concise, and helpful answers without sugarcoating. Maintain a professional yet confident persona."
     
     messages = [
@@ -16,5 +16,5 @@ async def universal_assistant(request: ChatRequest):
         {"role": "user", "content": request.message}
     ]
     
-    response_text = await generate_response(messages)
+    response_text = generate_response(messages)
     return {"reply": response_text}

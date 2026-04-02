@@ -1,23 +1,22 @@
-from openai import AsyncOpenAI
+from openai import OpenAI
 import os
 
-# Configure the local LLM endpoint (Ollama via OpenAI API schema)
-# To use LM Studio, change base_url to "http://localhost:1234/v1"
-LOCAL_LLM_URL = os.getenv("LLM_BASE_URL", "http://localhost:11434/v1")
-LOCAL_LLM_API_KEY = "ollama" # Replace "ollama" with "lm-studio" if required. It's often ignored locally.
-DEFAULT_MODEL = "dolphin" # Assuming dolphin is installed via Ollama
+# Configure the local LLM endpoint (LM Studio local server)
+LOCAL_LLM_URL = os.getenv("LLM_BASE_URL", "http://localhost:1234/v1")
+LOCAL_LLM_API_KEY = "lm-studio" # Replace "ollama" with "lm-studio" if required. It's often ignored locally.
+DEFAULT_MODEL = "dolphin3.0-llama3.1-8b" # Used dolphin model name
 
-client = AsyncOpenAI(
+client = OpenAI(
     base_url=LOCAL_LLM_URL,
     api_key=LOCAL_LLM_API_KEY
 )
 
-async def generate_response(messages: list, model: str = DEFAULT_MODEL) -> str:
+def generate_response(messages: list, model: str = DEFAULT_MODEL) -> str:
     """
     Generate response from local LLM via OpenAI API.
     """
     try:
-        response = await client.chat.completions.create(
+        response = client.chat.completions.create(
             model=model,
             messages=messages,
             temperature=0.7,

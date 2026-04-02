@@ -7,8 +7,8 @@ router = APIRouter()
 class PhishingRequest(BaseModel):
     url: str
 
-@router.post("/")
-async def url_detector(request: PhishingRequest):
+@router.post("")
+def url_detector(request: PhishingRequest):
     system_prompt = """
     You are an expert cybersecurity URL Detector.
     Analyze the provided URL for phishing patterns visually. Explain domain structure anomalies or reassure if it looks safe.
@@ -20,5 +20,5 @@ async def url_detector(request: PhishingRequest):
         {"role": "user", "content": f"Analyze this URL: {request.url}"}
     ]
     
-    response_text = await generate_response(messages)
+    response_text = generate_response(messages)
     return {"reply": response_text}
