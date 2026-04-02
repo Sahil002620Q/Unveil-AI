@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unveil AI</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-top">
+                <div class="logo">
+                    <i class="fa-solid fa-cube logo-icon"></i>
+                    <span class="logo-text">Unveil AI</span>
+                </div>
+                <!-- Toggle button hidden natively on desktop unless user chooses to collapse -->
+                <button class="icon-button mobile-close" id="mobile-close-btn" aria-label="Close sidebar">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            
+            <button class="new-session-btn" id="new-session-btn">
+                <i class="fa-solid fa-plus"></i>
+                <span class="btn-text">New Session</span>
+            </button>
+
+            <nav class="nav-menu">
+                <p class="nav-label">MODES</p>
+                <button class="nav-item active" data-mode="chat">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span class="nav-text">Universal Assistant</span>
+                </button>
+                <button class="nav-item" data-mode="phishing">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span class="nav-text">URL Detector</span>
+                </button>
+                <button class="nav-item" data-mode="reviewer">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                    <span class="nav-text">Genuine Review</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="user-profile">
+                    <div class="avatar">U</div>
+                    <div class="user-info">
+                        <span class="user-name">Local User</span>
+                        <span class="user-status">Connected</span>
+                    </div>
+                    <button class="icon-button settings-btn" aria-label="Settings">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="glass-header">
+                <div class="header-left">
+                    <button class="icon-button menu-toggle" id="menu-toggle-btn" aria-label="Toggle sidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="mode-info">
+                        <h2 id="header-title">Universal Assistant</h2>
+                        <span class="badge">Dolphin LLM</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <!-- Additional top right actions if any -->
+                </div>
+            </header>
+
+            <div class="chat-container" id="chat-container">
+                <!-- Welcome Screen -->
+                <div class="welcome-screen" id="welcome-screen">
+                    <div class="welcome-icon" id="welcome-icon">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h1 id="welcome-title">How can I help you today?</h1>
+                    <p id="welcome-subtitle">Ask anything or enter a prompt.</p>
+                    <div class="suggestion-chips" id="suggestion-chips">
+                        <button class="chip">Write a python script</button>
+                        <button class="chip">Explain quantum physics</button>
+                        <button class="chip">Draft an email</button>
+                    </div>
+                </div>
+                
+                <!-- Chat Messages appended here -->
+                <div class="messages-wrapper" id="messages-wrapper"></div>
+                
+                <!-- Typing Indicator Modal (Hidden by default) -->
+                <div class="typing-container hidden" id="typing-indicator">
+                    <div class="chat-bubble ai-bubble typing">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area-wrapper">
+                <div class="input-container">
+                    <button class="attach-btn" id="attach-btn" aria-label="Attach File">
+                        <i class="fa-solid fa-paperclip"></i>
+                    </button>
+                    <!-- Hidden file input -->
+                    <input type="file" id="file-input" style="display: none;" />
+
+                    <textarea id="chat-input" placeholder="Message Unveil AI..." rows="1"></textarea>
+                    
+                    <button class="send-btn" id="send-btn" aria-label="Send">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="footer-note">Unveil AI processes locally. Your data is secure.</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/script.js"></script>
+</body>
+</html>
